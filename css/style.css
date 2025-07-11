@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+body {
+    margin: 0;
+    padding: 0;
+    background: #111 url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI1IiBoZWlnaHQ9IjUiPgo8cmVjdCB3aWR0aD0iNSIgaGVpZ2h0PSI1IiBmaWxsPSIjMDAwIj48L3JlY3Q+CjxwYXRoIGQ9Ik0wIDVMNSAwWk02IDRMNCA2Wk0tMSAxTDEgLTFaIiBzdHJva2U9IjEzOTEzOTEiIHN0cm9rZS13aWR0aD0iMSI+PC9wYXRoPgo8L3N2Zz4=');
+    font-family: 'Orbitron', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    color: white;
+}
+
+canvas {
+    border: 4px solid #4a4a4a;
+    background: #000;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+    border-radius: 5px;
+}
+
+.ui {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    color: #00fffc;
+    text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff;
+    font-size: 20px;
+    font-weight: bold;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 1px solid #00ffff;
+}
+
+.ui span {
+    color: white;
+}
+
+.controls {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #00fffc;
+    text-align: center;
+    font-size: 16px;
+    text-shadow: 0 0 10px #00ffff;
+    background: rgba(0, 0, 0, 0.6);
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: 1px solid #00ffff;
+}
+
+.game-over {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    font-size: 28px;
+    display: none;
+    border: 2px solid #ff0000;
+    box-shadow: 0 0 30px #ff0000;
+    width: 400px;
+    max-width: 90%;
+}
+
+.restart-btn {
+    background: linear-gradient(to bottom, #00ff88, #00aa55);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    font-size: 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 20px;
+    text-shadow: 0 0 5px #000;
+    box-shadow: 0 0 15px #00ff88;
+    transition: all 0.3s;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.restart-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 25px #00ff88;
+}
+
+.upgrade-notification {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #00fffc;
+    font-size: 24px;
+    text-shadow: 0 0 10px #00ffff;
+    opacity: 0;
+    transition: opacity 0.5s;
+    pointer-events: none;
+    text-align: center;
+}

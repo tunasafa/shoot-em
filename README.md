@@ -13,3 +13,8 @@ next points to develop:
   - fix cactus shape
   - enlarge the highway
   - restart button not working yet
+
+v1 look
+
+<img width="1096" height="1043" alt="Screenshot 2025-07-11 at 22 09 38" src="https://github.com/user-attachments/assets/a88cba7f-cec3-48b4-84ab-08ce24035d28" />
+

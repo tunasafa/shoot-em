@@ -1,4 +1,4 @@
-# minigames
+# shoot'em
 
 v 1.0
 

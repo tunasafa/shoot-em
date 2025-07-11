@@ -2,7 +2,7 @@
 
 v 1.0
 
-some games to start
+some shooting game to start
 
 next points to develop:
   - enemy spawn and path adjustment

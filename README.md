@@ -1,18 +1,18 @@
 # shoot'em
 
-v 1.0
+v 1.1
 
 some shooting game to start
 
 next points to develop:
-  - enemy spawn and path adjustment
+  - enemy spawn and path adjustment (relatively fixed)
   - player asset update (size and shape)
-  - enemy asset update (size and shape)
-  - fix sound (when highly frequent shooting, sound stops and starts again, acting weird)
-  - add more sounds to the game
+  - enemy asset update (size and shape) (relatively fixed)
+  - fix sound (when highly frequent shooting, sound stops and starts again, acting weird) (so far fixed)
+  - add more sounds to the game 
   - fix cactus shape
   - enlarge the highway
-  - restart button not working yet
+  - restart button not working yet (fixed)
 
 v1 look
 

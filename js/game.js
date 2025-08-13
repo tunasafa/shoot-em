@@ -6,14 +6,12 @@ import { Particle } from './particle.js';
 
 export class Game {
     constructor() {
+ console.log('Game class constructor started');
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.keys = {};
         this.gameRunning = false;
 
-        this.shootSound = new Audio('assets/sounds/shoot.wav');
-        this.shootSound.volume = 0.25; 
-        
         // Game state
         this.score = 0;
         this.health = 100;
@@ -53,6 +51,8 @@ export class Game {
         });
         
         document.getElementById('restartBtn').addEventListener('click', () => this.restart());
+        console.log('Restart button event listener attached.');
+ console.log('Game class constructor finished');
     }
 
     // Initialize background sand particles
@@ -88,9 +88,7 @@ export class Game {
         this.update(deltaTime);
         this.render();
 
-        if (this.gameRunning) {
-            requestAnimationFrame(this.gameLoop.bind(this));
-        }
+        requestAnimationFrame(this.gameLoop.bind(this));
     }
 
     update(deltaTime) {
@@ -136,6 +134,17 @@ export class Game {
         this.powerUps = this.powerUps.filter(powerUp => powerUp.active);
         
         this.particles.forEach(particle => particle.update(deltaTime));
+
+        // Player vs Enemy collisions
+        for (let i = this.enemies.length - 1; i >= 0; i--) {
+            const enemy = this.enemies[i];
+            if (this.isColliding(this.player, enemy)) {
+                console.log('Player-enemy collision!', this.player, this.bullets);
+                // Handle player taking damage here if that's a desired behavior
+                // For now, just logging the collision
+            }
+        }
+
         this.particles = this.particles.filter(particle => particle.active);
         
         this.checkCollisions();
@@ -286,6 +295,7 @@ drawRealisticShrub(x, y, scale) {
     }
 
     restart() {
+        console.log('Restart button clicked!');
         this.score = 0;
         this.health = this.maxHealth;
         this.ammo = 20;
@@ -313,21 +323,25 @@ drawRealisticShrub(x, y, scale) {
     }
 
     spawnEnemy() {
-        const lane = Math.floor(Math.random() * 2);
         let typeChance = 0.05 + (this.wave * 0.01);
         typeChance = Math.min(typeChance, 0.2);
         const type = Math.random() < typeChance ? 'strong' : 'normal';
-        
-        const enemy = new Enemy(this, lane, type);
-        this.enemies.push(enemy);
+
+        const x = Math.random() * (this.canvas.width - 100) + 50; // Spawn randomly within canvas width
+        this.enemies.push(new Enemy(this, x, type));
     }
 
-    spawnPowerUp(x, y) {
-        const types = ['+', '×', '÷'];
-        const type = types[Math.floor(Math.random() * types.length)];
-        this.powerUps.push(new PowerUp(this, x, y, type));
-        this.nextPowerUpAt = this.enemiesDefeated + Math.max(2, 5 - Math.floor(this.wave/3));
+    spawnPowerUp() {
+    const types = ['+', '×', '÷'];
+    const type = types[Math.floor(Math.random() * types.length)];
+    const lane = Math.random() < 0.5 ? 'left' : 'right';
+
+    this.powerUps.push(new PowerUp(this, lane, type));
+    this.nextPowerUpAt = this.enemiesDefeated + Math.max(2, 5 - Math.floor(this.wave / 3));
     }
+
+
+
 
     autoShoot() {
         const currentTime = Date.now();
@@ -354,9 +368,11 @@ drawRealisticShrub(x, y, scale) {
         }
         
         // Play shoot sound
-        this.shootSound.currentTime = 0; // Rewind to start if already playing
-        this.shootSound.play().catch(e => console.log("Audio play failed:", e));
-        
+        const shootSound = new Audio('assets/sounds/shoot.wav');
+        shootSound.volume = 0.25;
+        shootSound.play().catch(e => console.log("Audio play failed:", e));
+
+
         this.ammo--;
         this.updateUI();
     }
@@ -613,7 +629,7 @@ drawRealisticShrub(x, y, scale) {
                         this.enemies.splice(j, 1);
                         
                         if (this.enemiesDefeated >= this.nextPowerUpAt) {
-                            this.spawnPowerUp(enemy.x, enemy.y);
+                            this.spawnPowerUp(); // Spawn power-up when enough enemies are defeated
                         }
                     }
                     break;
@@ -627,17 +643,35 @@ drawRealisticShrub(x, y, scale) {
             if (this.player.x < powerUp.x + powerUp.width &&
                 this.player.x + this.player.width > powerUp.x &&
                 this.player.y < powerUp.y + powerUp.height &&
-                this.player.y + this.player.height > powerUp.y) {
-                
-                this.applyPowerUp(powerUp.type);
+                this.player.y + this.player.height > powerUp.y) { // Player collides with power-up
+
+                this.applyPowerUp(powerUp.type); // Apply the power-up's effect
                 this.createExplosion(
-                    powerUp.x + powerUp.width/2, 
-                    powerUp.y + powerUp.height/2, 
-                    powerUp.color, 
+                    powerUp.x + powerUp.width/2,
+                    powerUp.y + powerUp.height/2,
+                    powerUp.color,
                     15,
                     2
                 );
                 this.powerUps.splice(i, 1);
+            }
+        }
+
+        // Bullet vs PowerUps
+        for (let i = this.bullets.length - 1; i >= 0; i--) {
+            for (let j = this.powerUps.length - 1; j >= 0; j--) {
+                const bullet = this.bullets[i];
+                const powerUp = this.powerUps[j];
+
+                if (bullet.x < powerUp.x + powerUp.width &&
+                    bullet.x + bullet.width > powerUp.x &&
+                    bullet.y < powerUp.y + powerUp.height &&
+                    bullet.y + bullet.height > powerUp.y) { // Bullet collides with power-up
+
+                    this.createExplosion(bullet.x + bullet.width/2, bullet.y + bullet.height/2, '#FFFF00', 5); // Yellow explosion for hitting power-up
+                    this.bullets.splice(i, 1); // Remove the bullet
+                    break; // A bullet can only hit one power-up at a time
+                }
             }
         }
     }
@@ -647,18 +681,17 @@ drawRealisticShrub(x, y, scale) {
         switch(type) {
             case '+': // Ammo
                 this.ammo = Math.min(this.maxAmmo, this.ammo + 10);
-                message = "AMMO +10";
                 break;
             case '×': // Power
                 this.power = Math.min(10, this.power + 1);
-                message = "POWER UP!";
                 break;
             case '÷': // Fire rate
                 this.fireRate = Math.min(12, this.fireRate + 1);
-                message = "FASTER FIRE!";
+                break;
+            default:
+                console.warn("Unknown power-up type:", type);
                 break;
         }
-        this.showUpgradeMessage(message);
         this.updateUI();
     }
 

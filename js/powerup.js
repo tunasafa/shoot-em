@@ -19,6 +19,7 @@ export class PowerUp {
     getColor() {
         switch(this.type) {
             case '+': return '#00FF00';
+ case '-': return '#FF0000'; // Red for minus
             case '×': return '#0066FF';
             case '÷': return '#FF00FF';
             default: return '#FFFF00';
@@ -69,11 +70,11 @@ export class PowerUp {
         ctx.fill();
         
         // Symbol
-        ctx.fillStyle = `hsla(${this.hue}, 100%, 50%, 1)`;
-        ctx.font = 'bold 22px Orbitron';
+ ctx.fillStyle = '#FFFFFF'; // White text for better visibility
+ ctx.font = 'bold 18px Orbitron';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(this.symbol, 0, 0);
+ ctx.fillText(this.symbol, 0, 0);
         
         ctx.restore();
         ctx.shadowBlur = 0;

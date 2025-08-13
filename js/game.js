@@ -1,704 +1,329 @@
-import { Player } from './player.js';
-import { Enemy } from './enemy.js';
-import { Bullet } from './bullet.js';
-import { PowerUp } from './powerup.js';
-import { Particle } from './particle.js';
+// export class Enemy {
+//     constructor(game, lane, type = 'normal') {
+//         this.game = game;
+//         this.x = Math.random() * 550 + 100;
+//         // Start at the 'green line' which is approximately at 40% of the canvas height
+//         this.y = this.game.canvas.height * 0.4;
+//         this.baseWidth = 30; // Max size
+//         this.baseHeight = 30; // Max size
+//         this.width = this.baseWidth; // Will be scaled in update
+//         this.height = this.baseHeight; // Will be scaled in update
+//         this.speed = 0.5 + Math.random() * 0.2; // Decreased speed
+//         this.health = type === 'strong' ? 2 : 1;
+//         this.maxHealth = this.health;
+//         this.type = type;
+//         this.lane = lane;
+//         this.animFrame = 0;
+//         this.bobOffset = Math.random() * Math.PI * 2;
+//         this.hitFlash = 0;
+//         this.active = true;
 
-export class Game {
-    constructor() {
- console.log('Game class constructor started');
-        this.canvas = document.getElementById('gameCanvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.keys = {};
-        this.gameRunning = false;
+//         // Scale with wave difficulty
+//         this.speed += this.game.wave * 0.1;
+//         if (this.type === 'strong') {
+//             this.health = 2 + Math.floor(this.game.wave/5);
+//             this.maxHealth = this.health;
+//         }
+//     }
 
-        // Game state
-        this.score = 0;
-        this.health = 100;
-        this.maxHealth = 100;
-        this.ammo = 20;
-        this.maxAmmo = 30;
-        this.power = 1;
-        this.fireRate = 1;
-        this.wave = 1;
-        this.waveTimer = 0;
-        this.lastAmmoRegen = 0;
-        this.lastShot = 0;
-        this.enemiesDefeated = 0;
-        this.nextPowerUpAt = 3;
-        this.comboMultiplier = 1;
-        this.lastEnemyKillTime = 0;
-        this.frameCount = 0; // Added missing frameCount property
-        
-        // Game objects
-        this.player = null;
-        this.bullets = [];
-        this.enemies = [];
-        this.powerUps = [];
-        this.particles = [];
-        this.backgroundStars = []; // Added missing backgroundStars array
-        
-        // Initialize background stars/sand particles
-        this.initBackgroundParticles();
-        
-        // Event listeners
-        document.addEventListener('keydown', (e) => {
-            this.keys[e.key.toLowerCase()] = true;
-        });
-        
-        document.addEventListener('keyup', (e) => {
-            this.keys[e.key.toLowerCase()] = false;
-        });
-        
-        document.getElementById('restartBtn').addEventListener('click', () => this.restart());
-        console.log('Restart button event listener attached.');
- console.log('Game class constructor finished');
-    }
+//     update(deltaTime) {
+//         const canvasHeight = this.game.canvas.height;
+//         const startY = canvasHeight * 0.4; // Green line y-coordinate
+//         const endY = canvasHeight; // Red line y-coordinate
 
-    // Initialize background sand particles
-    initBackgroundParticles() {
-        for (let i = 0; i < 50; i++) {
-            this.backgroundStars.push({
-                x: Math.random() * this.canvas.width,
-                y: Math.random() * this.canvas.height,
-                size: Math.random() * 2 + 1,
-                speed: Math.random() * 0.5 + 0.2,
-                alpha: Math.random() * 0.5 + 0.3,
-                twinklePhase: Math.random() * Math.PI * 2,
-                twinkleSpeed: Math.random() * 0.02 + 0.01
-            });
+//         // Calculate scale factor based on y position
+//         const minScale = 0.1; // Start even smaller
+//         // Interpolate scale factor from minScale at startY to 1 at endY
+//         let scaleFactor = minScale + (1 - minScale) * Math.max(0, (this.y - startY)) / (endY - startY);
+//         scaleFactor = Math.max(minScale, Math.min(1, scaleFactor)); // Clamp between minScale and 1
+
+//         console.log('Enemy update - y:', this.y, 'scaleFactor:', scaleFactor, 'baseWidth:', this.baseWidth, 'baseHeight:', this.baseHeight);
+//         console.log('Enemy update values:', this.x, this.y, this.width, this.height, scaleFactor);
+//         this.width = Math.max(0, this.baseWidth * scaleFactor); // Ensure width is not negative
+//         this.height = Math.max(0, this.baseHeight * scaleFactor); // Ensure height is not negative
+
+//         // Adjust x position to stay within the highway based on perspective
+//         const centerX = this.game.canvas.width / 2;
+//         const topRoadWidth = 160; // Road width at green line
+//         const bottomRoadWidth = 600; // Road width at red line
+//         const currentRoadWidth = topRoadWidth + (bottomRoadWidth - topRoadWidth) * Math.max(0, (this.y - startY)) / (endY - startY);
+
+//         const minX = centerX - currentRoadWidth / 2; // Left edge of the road
+//         const maxX = centerX + currentRoadWidth / 2 - this.width;
+
+//         // Ensure enemy stays within calculated bounds, while maintaining some randomness
+//         this.x = Math.max(minX, Math.min(maxX, this.x));
+//         // Add slight random movement within bounds if desired, or just clamp
+//         // this.x += (Math.random() - 0.5) * 2; // Optional: add slight horizontal wobble
+
+//         this.y += this.speed * (deltaTime / 16);
+//         this.animFrame++;
+//         if (this.hitFlash > 0) this.hitFlash--;
+
+//         if (this.y > this.game.canvas.height) {
+//             this.active = false;
+//             this.game.health -= this.type === 'strong' ? 10 : 5;
+//             this.game.updateUI();
+            
+//             if (this.game.health <= 0) {
+//                 this.game.gameOver();
+//             }
+//         }
+//     }
+
+//     takeDamage(amount) {
+//         this.health -= amount;
+//         this.hitFlash = 10;
+        
+//         if (this.health <= 0) {
+//             this.active = false;
+//             // Handle scoring and powerups in game.js
+//         }
+//     }
+
+//     render(ctx) {
+//         const bobY = this.y + Math.sin(this.animFrame * 0.1 + this.bobOffset) * 3;
+        
+//         // Enemy shadow
+//         ctx.globalAlpha = 0.4;
+//         ctx.fillStyle = '#000000';
+//         ctx.beginPath();
+//         ctx.ellipse(this.x + this.width/2, bobY + this.height + 8, this.width/2, 6, 0, 0, Math.PI * 2);
+//         ctx.fill();
+//         ctx.globalAlpha = 1;
+        
+//         // Hit flash effect
+//         if (this.hitFlash > 0) {
+//             ctx.fillStyle = `rgba(255, 255, 255, ${this.hitFlash/10})`;
+//             ctx.beginPath();
+//             ctx.arc(this.x + this.width/2, bobY + this.height/2, Math.max(0, this.width/2 + 5), 0, Math.PI * 2);
+//             ctx.fill();
+//         }
+
+//         // Enemy body gradient
+//         console.log('Gradient args:', this.x + this.width/2, bobY + this.height/2, 0, this.x + this.width/2, bobY + this.height/2, this.width/2);
+//         console.log('Enemy render values before gradient:', this.x, bobY, this.width, this.height);
+//         const gradient = ctx.createRadialGradient(
+//             this.x + this.width/2, bobY + this.height/2, 0,
+//             this.x + this.width/2, bobY + this.height/2, this.width/2
+//         );
+        
+//         if (this.type === 'strong') {
+//             gradient.addColorStop(0, '#FF3355');
+//             gradient.addColorStop(1, '#990022');
+//         } else {
+//             gradient.addColorStop(0, '#FF9933');
+//             gradient.addColorStop(1, '#CC6600');
+//         }
+        
+//         ctx.fillStyle = gradient;
+//         ctx.beginPath();
+//         ctx.arc(this.x + this.width/2, bobY + this.height/2, Math.max(0, this.width/2), 0, Math.PI * 2);
+//         ctx.fill();
+
+//         // Enemy details
+//         ctx.fillStyle = '#331100';
+//         ctx.beginPath();
+//         ctx.arc(this.x + this.width/2, bobY + this.height/2, Math.max(0, this.width/2 - 6), 0, Math.PI * 2);
+//         ctx.fill();
+
+//         // Glowing eyes
+//         ctx.shadowColor = '#FF0000';
+//         ctx.shadowBlur = 15;
+//         ctx.fillStyle = '#FF0000';
+//         ctx.beginPath();
+//         ctx.arc(this.x + this.width/2 - Math.max(0, this.width * 0.15), bobY + this.height/2 - Math.max(0, this.height * 0.1), Math.max(0, this.width * 0.08), 0, Math.PI * 2);
+//         ctx.arc(this.x + this.width/2 + Math.max(0, this.width * 0.15), bobY + this.height/2 - Math.max(0, this.height * 0.1), Math.max(0, this.width * 0.08), 0, Math.PI * 2);
+//         ctx.fill();
+//         ctx.shadowBlur = 0;
+
+//         // Mouth
+//         ctx.fillStyle = '#000';
+//         ctx.beginPath();
+//         ctx.arc(this.x + this.width/2, bobY + this.height/2 + 10, 8, 0.1 * Math.PI, 0.9 * Math.PI);
+//         ctx.fill();
+        
+//         // Health bar (only if damaged)
+//         if (this.health < this.maxHealth) {
+//             ctx.fillStyle = '#FF0000';
+//             ctx.fillRect(this.x - 5, bobY - 15, this.width + 10, 6);
+//             ctx.fillStyle = '#00FF00';
+//             ctx.fillRect(this.x - 5, bobY - 15, ((this.width + 10) * this.health) / this.maxHealth, 6);
+            
+//             // Health bar glow
+//             ctx.shadowColor = '#00FF00';
+//             ctx.shadowBlur = 10;
+//             ctx.fillRect(this.x - 5, bobY - 15, ((this.width + 10) * this.health) / this.maxHealth, 3);
+//             ctx.shadowBlur = 0;
+//         }
+//     }
+// }
+
+export class Enemy {
+    constructor(game, lane = 'left', type = 'normal') {
+        this.game = game;
+        this.canvas = game.canvas;
+        this.ctx = game.ctx;
+
+        this.baseWidth = 30;
+        this.baseHeight = 30;
+        this.width = this.baseWidth;
+        this.height = this.baseHeight;
+
+        this.y = this.canvas.height * 0.4; // Start at green line
+        const laneBounds = this.getLaneBounds(this.y, lane);
+        this.x = Math.random() * (laneBounds.maxX - laneBounds.minX - this.baseWidth) + laneBounds.minX;
+
+        this.speed = 0.5 + Math.random() * 0.2;
+        this.health = type === 'strong' ? 2 : 1;
+        this.maxHealth = this.health;
+        this.type = type;
+        this.lane = lane;
+        this.animFrame = 0;
+        this.bobOffset = Math.random() * Math.PI * 2;
+        this.hitFlash = 0;
+        this.active = true;
+
+        this.speed += this.game.wave * 0.1;
+        if (this.type === 'strong') {
+            this.health = 2 + Math.floor(this.game.wave / 5);
+            this.maxHealth = this.health;
         }
     }
 
-    async init() {
-        this.player = new Player(this);
-        this.updateUI();
-        this.gameRunning = true;
-    }
+    getLaneBounds(y, lane) {
+        const centerX = this.canvas.width / 2;
+        const topRoadWidth = 160;
+        const bottomRoadWidth = 600;
+        const startY = this.canvas.height * 0.4;
+        const endY = this.canvas.height;
+        const currentRoadWidth = topRoadWidth + (bottomRoadWidth - topRoadWidth) * Math.max(0, (y - startY)) / (endY - startY);
+        const laneWidth = currentRoadWidth / 2;
 
-    start() {
-        this.lastTime = performance.now();
-        requestAnimationFrame(this.gameLoop.bind(this));
-    }
-
-    gameLoop(currentTime) {
-        const deltaTime = currentTime - this.lastTime;
-        this.lastTime = currentTime;
-
-        this.update(deltaTime);
-        this.render();
-
-        requestAnimationFrame(this.gameLoop.bind(this));
+        if (lane === 'left') {
+            return {
+                minX: centerX - currentRoadWidth / 2,
+                maxX: centerX - laneWidth / 2
+            };
+        } else {
+            return {
+                minX: centerX + laneWidth / 2,
+                maxX: centerX + currentRoadWidth / 2
+            };
+        }
     }
 
     update(deltaTime) {
-        if (!this.gameRunning) return;
-        
-        this.waveTimer++;
-        this.frameCount++; // Increment frame count for animations
-        
-        // Wave progression (every 20 seconds)
-        if (this.waveTimer > 1200) {
-            this.wave++;
-            this.waveTimer = 0;
-            this.showUpgradeMessage(`WAVE ${this.wave}!`);
-            this.updateUI();
-        }
-        
-        // Ammo regeneration (every second)
-        if (Date.now() - this.lastAmmoRegen > 1000) {
-            if (this.ammo < this.maxAmmo) this.ammo++;
-            this.lastAmmoRegen = Date.now();
-            this.updateUI();
-        }
-        
-        // Update player
-        this.player.update(deltaTime);
-        
-        // Auto shooting
-        this.autoShoot();
-        
-        // Controlled enemy spawning
-        if (Math.random() < 0.006 + (this.wave * 0.002)) {
-            this.spawnEnemy();
-        }
-        
-        // Update game objects
-        this.bullets.forEach(bullet => bullet.update(deltaTime));
-        this.bullets = this.bullets.filter(bullet => bullet.active);
-        
-        this.enemies.forEach(enemy => enemy.update(deltaTime));
-        this.enemies = this.enemies.filter(enemy => enemy.active);
-        
-        this.powerUps.forEach(powerUp => powerUp.update(deltaTime));
-        this.powerUps = this.powerUps.filter(powerUp => powerUp.active);
-        
-        this.particles.forEach(particle => particle.update(deltaTime));
+        const canvasHeight = this.canvas.height;
+        const startY = canvasHeight * 0.4;
+        const endY = canvasHeight;
 
-        // Player vs Enemy collisions
-        for (let i = this.enemies.length - 1; i >= 0; i--) {
-            const enemy = this.enemies[i];
-            if (this.isColliding(this.player, enemy)) {
-                console.log('Player-enemy collision!', this.player, this.bullets);
-                // Handle player taking damage here if that's a desired behavior
-                // For now, just logging the collision
-            }
-        }
+        const minScale = 0.1;
+        let scaleFactor = minScale + (1 - minScale) * Math.max(0, (this.y - startY)) / (endY - startY);
+        scaleFactor = Math.max(minScale, Math.min(1, scaleFactor));
 
-        this.particles = this.particles.filter(particle => particle.active);
-        
-        this.checkCollisions();
-    }
+        this.width = Math.max(0, this.baseWidth * scaleFactor);
+        this.height = Math.max(0, this.baseHeight * scaleFactor);
 
-    render() {
-        this.drawBackground();
-        
-        // Draw game objects
-        this.powerUps.forEach(powerUp => powerUp.render(this.ctx));
-        this.bullets.forEach(bullet => bullet.render(this.ctx));
-        this.enemies.forEach(enemy => enemy.render(this.ctx));
-        this.particles.forEach(particle => particle.render(this.ctx));
-        
-        this.player.render(this.ctx);
-    }
+        const laneBounds = this.getLaneBounds(this.y, this.lane);
+        this.x = Math.max(laneBounds.minX, Math.min(laneBounds.maxX - this.width, this.x));
 
+        this.y += this.speed * (deltaTime / 16);
+        this.animFrame++;
+        if (this.hitFlash > 0) this.hitFlash--;
 
-    drawRealisticCactus(x, y, scale) {
-    this.ctx.save();
-    this.ctx.translate(x, y);
-    this.ctx.scale(scale, scale);
-    
-    // Main trunk with rounded edges
-    this.ctx.fillStyle = '#228B22';
-    this.ctx.beginPath();
-    this.ctx.roundRect(-12, -85, 24, 105, 5);
-    this.ctx.fill();
-    
-    // Trunk highlight
-    this.ctx.fillStyle = '#32CD32';
-    this.ctx.beginPath();
-    this.ctx.roundRect(-10, -83, 8, 100, 3);
-    this.ctx.fill();
-    
-    // Trunk shadow
-    this.ctx.fillStyle = '#1F5F1F';
-    this.ctx.beginPath();
-    this.ctx.roundRect(2, -83, 8, 100, 3);
-    this.ctx.fill();
-    
-    // Left arm (bigger, positioned up)
-    this.ctx.fillStyle = '#228B22';
-    this.ctx.beginPath();
-    this.ctx.roundRect(-40, -65, 18, 40, 4);
-    this.ctx.fill();
-    this.ctx.beginPath();
-    this.ctx.roundRect(-40, -70, 28, 18, 4);
-    this.ctx.fill();
-    
-    // Left arm highlight
-    this.ctx.fillStyle = '#32CD32';
-    this.ctx.beginPath();
-    this.ctx.roundRect(-38, -63, 6, 35, 2);
-    this.ctx.fill();
-    
-    // Right arm (smaller)
-    this.ctx.fillStyle = '#228B22';
-    this.ctx.beginPath();
-    this.ctx.roundRect(22, -45, 15, 30, 3);
-    this.ctx.fill();
-    this.ctx.beginPath();
-    this.ctx.roundRect(17, -50, 20, 15, 3);
-    this.ctx.fill();
-    
-    // Right arm highlight
-    this.ctx.fillStyle = '#32CD32';
-    this.ctx.beginPath();
-    this.ctx.roundRect(24, -43, 5, 25, 2);
-    this.ctx.fill();
-    
-    // Add simple spine details
-    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-    for (let i = 0; i < 6; i++) {
-        this.ctx.beginPath();
-        this.ctx.arc(-8 + (i % 2) * 8, -70 + Math.floor(i / 2) * 25, 1, 0, Math.PI * 2);
-        this.ctx.fill();
-    }
-    
-    this.ctx.restore();
-}
+        if (this.y > canvasHeight) {
+            this.active = false;
+            this.game.health -= this.type === 'strong' ? 10 : 5;
+            this.game.updateUI();
 
-drawRealisticShrub(x, y, scale) {
-    this.ctx.save();
-    this.ctx.translate(x, y);
-    this.ctx.scale(scale, scale);
-    
-    // Multiple overlapping circles for natural look
-    const shrubColor = 'rgba(107, 142, 35, 0.8)';
-    const highlightColor = 'rgba(154, 205, 50, 0.6)';
-    
-    this.ctx.fillStyle = shrubColor;
-    
-    // Base shrub masses
-    this.ctx.beginPath();
-    this.ctx.arc(0, 0, 18, 0, Math.PI * 2);
-    this.ctx.fill();
-    
-    this.ctx.beginPath();
-    this.ctx.arc(-12, -8, 14, 0, Math.PI * 2);
-    this.ctx.fill();
-    
-    this.ctx.beginPath();
-    this.ctx.arc(10, -5, 12, 0, Math.PI * 2);
-    this.ctx.fill();
-    
-    this.ctx.beginPath();
-    this.ctx.arc(-5, 8, 10, 0, Math.PI * 2);
-    this.ctx.fill();
-    
-    // Highlight areas
-    this.ctx.fillStyle = highlightColor;
-    this.ctx.beginPath();
-    this.ctx.arc(-3, -8, 8, 0, Math.PI * 2);
-    this.ctx.fill();
-    
-    this.ctx.beginPath();
-    this.ctx.arc(5, -10, 6, 0, Math.PI * 2);
-    this.ctx.fill();
-    
-    this.ctx.restore();
-}
-
-
-    updateUI() {
-        document.getElementById('score').textContent = this.score;
-        document.getElementById('health').textContent = this.health;
-        document.getElementById('ammo').textContent = this.ammo;
-        document.getElementById('power').textContent = this.power;
-        document.getElementById('wave').textContent = this.wave;
-        document.getElementById('fireRate').textContent = this.fireRate;
-    }
-
-    showUpgradeMessage(text) {
-        const notification = document.getElementById('upgradeNotification');
-        notification.textContent = text;
-        notification.style.opacity = 1;
-        
-        setTimeout(() => {
-            notification.style.opacity = 0;
-        }, 1500);
-    }
-
-    gameOver() {
-        this.gameRunning = false;
-        document.getElementById('finalScore').textContent = this.score;
-        document.getElementById('gameOver').style.display = 'block';
-    }
-
-    restart() {
-        console.log('Restart button clicked!');
-        this.score = 0;
-        this.health = this.maxHealth;
-        this.ammo = 20;
-        this.power = 1;
-        this.fireRate = 1;
-        this.wave = 1;
-        this.waveTimer = 0;
-        this.enemiesDefeated = 0;
-        this.nextPowerUpAt = 3;
-        this.comboMultiplier = 1;
-        this.frameCount = 0;
-        
-        this.player.x = 400;
-        this.bullets = [];
-        this.enemies = [];
-        this.powerUps = [];
-        this.particles = [];
-        
-        // Reinitialize background particles
-        this.initBackgroundParticles();
-        
-        document.getElementById('gameOver').style.display = 'none';
-        this.updateUI();
-        this.gameRunning = true;
-    }
-
-    spawnEnemy() {
-        let typeChance = 0.05 + (this.wave * 0.01);
-        typeChance = Math.min(typeChance, 0.2);
-        const type = Math.random() < typeChance ? 'strong' : 'normal';
-
-        const x = Math.random() * (this.canvas.width - 100) + 50; // Spawn randomly within canvas width
-        this.enemies.push(new Enemy(this, x, type));
-    }
-
-    spawnPowerUp() {
-    const types = ['+', '×', '÷'];
-    const type = types[Math.floor(Math.random() * types.length)];
-    const lane = Math.random() < 0.5 ? 'left' : 'right';
-
-    this.powerUps.push(new PowerUp(this, lane, type));
-    this.nextPowerUpAt = this.enemiesDefeated + Math.max(2, 5 - Math.floor(this.wave / 3));
-    }
-
-
-
-
-    autoShoot() {
-        const currentTime = Date.now();
-        const shootInterval = Math.max(50, 600 - (this.fireRate * 50));
-        
-        if (currentTime - this.lastShot >= shootInterval && this.ammo > 0) {
-            this.shoot();
-            this.lastShot = currentTime;
-        }
-    }
-
-    shoot() {
-        const bulletCount = Math.min(3, Math.floor(this.power/3) + 1);
-        const spread = (bulletCount - 1) * 5;
-        
-        for (let i = 0; i < bulletCount; i++) {
-            const offset = (i - (bulletCount - 1)/2) * spread;
-            this.bullets.push(new Bullet(
-                this,
-                this.player.x + this.player.width/2 - 4 + offset, 
-                this.player.y, 
-                this.power
-            ));
-        }
-        
-        // Play shoot sound
-        const shootSound = new Audio('assets/sounds/shoot.wav');
-        shootSound.volume = 0.25;
-        shootSound.play().catch(e => console.log("Audio play failed:", e));
-
-
-        this.ammo--;
-        this.updateUI();
-    }
-
-    createExplosion(x, y, color, count = 15, size = 1) {
-        for (let i = 0; i < count; i++) {
-            this.particles.push(new Particle(this, x, y, color));
-            if (size > 1) {
-                for (let j = 0; j < size; j++) {
-                    this.particles.push(new Particle(
-                        this,
-                        x + (Math.random() - 0.5) * 10, 
-                        y + (Math.random() - 0.5) * 10, 
-                        color
-                    ));
-                }
+            if (this.game.health <= 0) {
+                this.game.gameOver();
             }
         }
     }
 
+    takeDamage(amount) {
+        this.health -= amount;
+        this.hitFlash = 10;
 
-    drawBackground() {
-    // Create sky gradient - warm desert sunset colors
-    const skyGradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height * 0.6);
-    skyGradient.addColorStop(0, '#FFB347');    // Peach
-    skyGradient.addColorStop(0.3, '#FF8C69');  // Salmon
-    skyGradient.addColorStop(0.6, '#FF6347');  // Tomato
-    skyGradient.addColorStop(1, '#CD853F');    // Peru
-    
-    this.ctx.fillStyle = skyGradient;
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height * 0.6);
-    
-    // Draw distant mountains/mesa silhouettes
-    this.ctx.save();
-    this.ctx.fillStyle = 'rgba(139, 69, 19, 0.8)'; // Dark brown silhouette
-    
-    // Left mountain range
-    this.ctx.beginPath();
-    this.ctx.moveTo(0, this.canvas.height * 0.1);
-    this.ctx.lineTo(100, this.canvas.height * 0.25);
-    this.ctx.lineTo(180, this.canvas.height * 0.3);
-    this.ctx.lineTo(250, this.canvas.height * 0.3);
-    this.ctx.lineTo(320, this.canvas.height * 0.4);
-    this.ctx.lineTo(0, this.canvas.height * 0.4);
-    this.ctx.fill();
-    
-    // Right mountain range
-    this.ctx.beginPath();
-    this.ctx.moveTo(this.canvas.width, this.canvas.height * 0.3);
-    this.ctx.lineTo(this.canvas.width - 100, this.canvas.height * 0.28);
-    this.ctx.lineTo(this.canvas.width - 180, this.canvas.height * 0.32);
-    this.ctx.lineTo(this.canvas.width - 250, this.canvas.height * 0.3);
-    this.ctx.lineTo(this.canvas.width - 320, this.canvas.height * 0.4);
-    this.ctx.lineTo(this.canvas.width, this.canvas.height * 0.4);
-    this.ctx.fill();
-    
-   
-    this.ctx.restore();
-    
-    // Draw desert floor gradient with sand waves
-    const desertGradient = this.ctx.createLinearGradient(0, this.canvas.height * 0.1, 0, this.canvas.height);
-    desertGradient.addColorStop(0, '#DEB887');  // Burlywood
-    desertGradient.addColorStop(0.5, '#D2691E'); // Chocolate
-    desertGradient.addColorStop(1, '#A0522D');   // Sienna
-    
-    this.ctx.fillStyle = desertGradient;
-    this.ctx.fillRect(0, this.canvas.height * 0.4, this.canvas.width, this.canvas.height * 0.6);
-    
-    // Add sand waves and dunes
-    this.ctx.save();
-    this.ctx.fillStyle = 'rgba(244, 164, 96, 0.6)';
-    
-    // Draw rolling sand waves
-    for (let i = 0; i < 4; i++) {
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, this.canvas.height * 0.9);
-        
-        for (let x = 0; x <= this.canvas.width; x += 20) {
-            const waveHeight = Math.sin(x * 0.01 + i * 1.5 + this.frameCount * 0.01) * 15;
-            const baseY = this.canvas.height * (0.55 + i * 0.08);
-            this.ctx.lineTo(x, baseY + waveHeight);
-        }
-        
-        this.ctx.lineTo(this.canvas.width, this.canvas.height);
-        this.ctx.lineTo(0, this.canvas.height);
-        this.ctx.fill();
-    }
-    
-    // Add sand ripples
-    this.ctx.strokeStyle = 'rgba(210, 180, 140, 0.4)';
-    this.ctx.lineWidth = 2;
-    
-    for (let i = 0; i < 8; i++) {
-        this.ctx.beginPath();
-        const rippleY = this.canvas.height * (0.5 + i * 0.05);
-        
-        for (let x = 0; x <= this.canvas.width; x += 15) {
-            const rippleHeight = Math.sin(x * 0.02 + i * 0.8 + this.frameCount * 0.005) * 8;
-            if (x === 0) {
-                this.ctx.moveTo(x, rippleY + rippleHeight);
-            } else {
-                this.ctx.lineTo(x, rippleY + rippleHeight);
-            }
-        }
-        this.ctx.stroke();
-    }
-    
-    this.ctx.restore();
-    
-    // Draw road with perspective (2x larger)
-    const roadWidth = 600;
-    const roadTop = this.canvas.height * 0.4;
-    const roadBottom = this.canvas.height;
-    const centerX = this.canvas.width / 2;
-    
-    // Enhanced cacti with more realistic shapes
-    this.drawRealisticCactus(70, this.canvas.height * 0.45, 0.7);
-    this.drawRealisticCactus(this.canvas.width - 100, this.canvas.height * 0.52, 0.7);
-    this.drawRealisticCactus(180, this.canvas.height * 0.58, 0.6);
-    this.drawRealisticCactus(this.canvas.width - 200, this.canvas.height * 0.55, 0.8);
-    
-    // Enhanced shrubs with variety
-    this.drawRealisticShrub(140, this.canvas.height * 0.62, 0.5);
-    this.drawRealisticShrub(this.canvas.width - 160, this.canvas.height * 0.65, 0.4);
-    this.drawRealisticShrub(60, this.canvas.height * 0.68, 0.6);
-    this.drawRealisticShrub(this.canvas.width - 80, this.canvas.height * 0.7, 0.3);
-    
-
-    // Road surface
-    this.ctx.fillStyle = '#798787';
-    this.ctx.beginPath();
-    this.ctx.moveTo(centerX - 80, roadTop);
-    this.ctx.lineTo(centerX + 80, roadTop);
-    this.ctx.lineTo(centerX + roadWidth/2, roadBottom);
-    this.ctx.lineTo(centerX - roadWidth/2, roadBottom);
-    this.ctx.closePath();
-    this.ctx.fill();
-    
-    // Road center line with perspective
-    this.ctx.strokeStyle = '#FFD700';
-    this.ctx.lineWidth = 4;
-    this.ctx.setLineDash([20, 15]);
-    
-    this.ctx.beginPath();
-    this.ctx.moveTo(centerX, roadTop);
-    this.ctx.lineTo(centerX, roadBottom);
-    this.ctx.stroke();
-    this.ctx.setLineDash([]);
-    
-    // Road edges
-    this.ctx.strokeStyle = '#FFFFFF';
-    this.ctx.lineWidth = 3;
-    
-    // Left edge
-    this.ctx.beginPath();
-    this.ctx.moveTo(centerX - 80, roadTop);
-    this.ctx.lineTo(centerX - roadWidth/2, roadBottom);
-    this.ctx.stroke();
-    
-    // Right edge
-    this.ctx.beginPath();
-    this.ctx.moveTo(centerX + 80, roadTop);
-    this.ctx.lineTo(centerX + roadWidth/2, roadBottom);
-    this.ctx.stroke();
-
-    
-    // Add sun
-    this.ctx.save();
-    this.ctx.fillStyle = '#FFD700';
-    this.ctx.shadowColor = '#FFD700';
-    this.ctx.shadowBlur = 30;
-    this.ctx.beginPath();
-    this.ctx.arc(this.canvas.width * 0.8, this.canvas.height * 0.15, 40, 0, Math.PI * 2);
-    this.ctx.fill();
-    this.ctx.restore();
-    
-    // Add floating dust particles
-    this.ctx.fillStyle = 'rgba(244, 164, 96, 0.6)';
-    this.backgroundStars.forEach(particle => {
-        particle.twinklePhase += particle.twinkleSpeed;
-        const shimmer = Math.sin(particle.twinklePhase) * 0.3 + 0.7;
-        
-        this.ctx.globalAlpha = particle.alpha * shimmer * 0.5;
-        this.ctx.beginPath();
-        this.ctx.arc(particle.x, particle.y, particle.size * 0.6, 0, Math.PI * 2);
-        this.ctx.fill();
-        
-        particle.y += particle.speed * 0.3;
-        particle.x += Math.sin(particle.y * 0.008) * 0.2;
-        
-        if (particle.y > this.canvas.height) {
-            particle.y = -particle.size;
-            particle.x = Math.random() * this.canvas.width;
-        }
-    });
-    this.ctx.globalAlpha = 1;
-    
-    // Add heat shimmer effect
-    this.ctx.save();
-    this.ctx.globalAlpha = 0.05;
-    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-    this.ctx.lineWidth = 1;
-    
-    for (let i = 0; i < 3; i++) {
-        const wave = Math.sin(this.frameCount * 0.03 + i * 0.7) * 5;
-        this.ctx.beginPath();
-        for (let x = 0; x < this.canvas.width; x += 10) {
-            const y = this.canvas.height * 0.5 + wave + Math.sin(x * 0.01) * 2;
-            if (x === 0) this.ctx.moveTo(x, y);
-            else this.ctx.lineTo(x, y);
-        }
-        this.ctx.stroke();
-    }
-    this.ctx.restore();
-}
-
-
-    checkCollisions() {
-        // Bullet vs Enemy collisions
-        for (let i = this.bullets.length - 1; i >= 0; i--) {
-            for (let j = this.enemies.length - 1; j >= 0; j--) {
-                const bullet = this.bullets[i];
-                const enemy = this.enemies[j];
-                
-                if (bullet.x < enemy.x + enemy.width &&
-                    bullet.x + bullet.width > enemy.x &&
-                    bullet.y < enemy.y + enemy.height &&
-                    bullet.y + bullet.height > enemy.y) {
-                    
-                    enemy.takeDamage(bullet.power);
-                    this.createExplosion(bullet.x + bullet.width/2, bullet.y + bullet.height/2, '#FFD700', 8);
-                    this.bullets.splice(i, 1);
-                    
-                    if (enemy.health <= 0) {
-                        const currentTime = Date.now();
-                        if (currentTime - this.lastEnemyKillTime < 1000) {
-                            this.comboMultiplier = Math.min(5, this.comboMultiplier + 0.5);
-                        } else {
-                            this.comboMultiplier = 1;
-                        }
-                        this.lastEnemyKillTime = currentTime;
-                        
-                        const basePoints = enemy.type === 'strong' ? 30 : 15;
-                        this.score += Math.floor(basePoints * this.comboMultiplier);
-                        this.enemiesDefeated++;
-                        
-                        this.createExplosion(
-                            enemy.x + enemy.width/2, 
-                            enemy.y + enemy.height/2, 
-                            enemy.type === 'strong' ? '#FF3355' : '#FF9933', 
-                            20,
-                            2
-                        );
-                        this.enemies.splice(j, 1);
-                        
-                        if (this.enemiesDefeated >= this.nextPowerUpAt) {
-                            this.spawnPowerUp(); // Spawn power-up when enough enemies are defeated
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-        
-        // Player vs PowerUps
-        for (let i = this.powerUps.length - 1; i >= 0; i--) {
-            const powerUp = this.powerUps[i];
-            if (this.player.x < powerUp.x + powerUp.width &&
-                this.player.x + this.player.width > powerUp.x &&
-                this.player.y < powerUp.y + powerUp.height &&
-                this.player.y + this.player.height > powerUp.y) { // Player collides with power-up
-
-                this.applyPowerUp(powerUp.type); // Apply the power-up's effect
-                this.createExplosion(
-                    powerUp.x + powerUp.width/2,
-                    powerUp.y + powerUp.height/2,
-                    powerUp.color,
-                    15,
-                    2
-                );
-                this.powerUps.splice(i, 1);
-            }
-        }
-
-        // Bullet vs PowerUps
-        for (let i = this.bullets.length - 1; i >= 0; i--) {
-            for (let j = this.powerUps.length - 1; j >= 0; j--) {
-                const bullet = this.bullets[i];
-                const powerUp = this.powerUps[j];
-
-                if (bullet.x < powerUp.x + powerUp.width &&
-                    bullet.x + bullet.width > powerUp.x &&
-                    bullet.y < powerUp.y + powerUp.height &&
-                    bullet.y + bullet.height > powerUp.y) { // Bullet collides with power-up
-
-                    this.createExplosion(bullet.x + bullet.width/2, bullet.y + bullet.height/2, '#FFFF00', 5); // Yellow explosion for hitting power-up
-                    this.bullets.splice(i, 1); // Remove the bullet
-                    break; // A bullet can only hit one power-up at a time
-                }
-            }
+        if (this.health <= 0) {
+            this.active = false;
+            // Scoring and powerups handled in game.js
         }
     }
 
-    applyPowerUp(type) {
-        let message = "";
-        switch(type) {
-            case '+': // Ammo
-                this.ammo = Math.min(this.maxAmmo, this.ammo + 10);
-                break;
-            case '×': // Power
-                this.power = Math.min(10, this.power + 1);
-                break;
-            case '÷': // Fire rate
-                this.fireRate = Math.min(12, this.fireRate + 1);
-                break;
-            default:
-                console.warn("Unknown power-up type:", type);
-                break;
-        }
-        this.updateUI();
-    }
+    render(ctx) {
+        const bobY = this.y + Math.sin(this.animFrame * 0.1 + this.bobOffset) * 3;
 
-    isColliding(obj1, obj2) {
-        return obj1.x < obj2.x + obj2.width &&
-               obj1.x + obj1.width > obj2.x &&
-               obj1.y < obj2.y + obj2.height &&
-               obj1.y + obj1.height > obj2.y;
+        // Shadow
+        ctx.globalAlpha = 0.4;
+        ctx.fillStyle = '#000000';
+        ctx.beginPath();
+        ctx.ellipse(this.x + this.width / 2, bobY + this.height + 8, this.width / 2, 6, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        // Hit flash
+        if (this.hitFlash > 0) {
+            ctx.fillStyle = `rgba(255, 255, 255, ${this.hitFlash / 10})`;
+            ctx.beginPath();
+            ctx.arc(this.x + this.width / 2, bobY + this.height / 2, Math.max(0, this.width / 2 + 5), 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // Body gradient
+        const gradient = ctx.createRadialGradient(
+            this.x + this.width / 2, bobY + this.height / 2, 0,
+            this.x + this.width / 2, bobY + this.height / 2, this.width / 2
+        );
+
+        if (this.type === 'strong') {
+            gradient.addColorStop(0, '#FF3355');
+            gradient.addColorStop(1, '#990022');
+        } else {
+            gradient.addColorStop(0, '#FF9933');
+            gradient.addColorStop(1, '#CC6600');
+        }
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(this.x + this.width / 2, bobY + this.height / 2, Math.max(0, this.width / 2), 0, Math.PI * 2);
+        ctx.fill();
+
+        // Inner body
+        ctx.fillStyle = '#331100';
+        ctx.beginPath();
+        ctx.arc(this.x + this.width / 2, bobY + this.height / 2, Math.max(0, this.width / 2 - 6), 0, Math.PI * 2);
+        ctx.fill();
+
+        // Eyes
+        ctx.shadowColor = '#FF0000';
+        ctx.shadowBlur = 15;
+        ctx.fillStyle = '#FF0000';
+        ctx.beginPath();
+        ctx.arc(this.x + this.width / 2 - Math.max(0, this.width * 0.15), bobY + this.height / 2 - Math.max(0, this.height * 0.1), Math.max(0, this.width * 0.08), 0, Math.PI * 2);
+        ctx.arc(this.x + this.width / 2 + Math.max(0, this.width * 0.15), bobY + this.height / 2 - Math.max(0, this.height * 0.1), Math.max(0, this.width * 0.08), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Mouth
+        ctx.fillStyle = '#000';
+        ctx.beginPath();
+        ctx.arc(this.x + this.width / 2, bobY + this.height / 2 + 10, 8, 0.1 * Math.PI, 0.9 * Math.PI);
+        ctx.fill();
+
+        // Health bar
+        if (this.health < this.maxHealth) {
+            ctx.fillStyle = '#FF0000';
+            ctx.fillRect(this.x - 5, bobY - 15, this.width + 10, 6);
+            ctx.fillStyle = '#00FF00';
+            ctx.fillRect(this.x - 5, bobY - 15, ((this.width + 10) * this.health) / this.maxHealth, 6);
+
+            ctx.shadowColor = '#00FF00';
+            ctx.shadowBlur = 10;
+            ctx.fillRect(this.x - 5, bobY - 15, ((this.width + 10) * this.health) / this.maxHealth, 3);
+            ctx.shadowBlur = 0;
+        }
     }
 }

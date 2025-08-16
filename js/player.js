@@ -2,17 +2,17 @@ export class Player {
     constructor(game) {
         this.game = game;
         this.x = 400;
-        this.y = 550;
+        this.y = 525;
         
         // Sprite properties (original size)
         this.spriteWidth = 1024;
-        this.spriteHeight = 1536;
+        this.spriteHeight = 1024;
         
         // Display size (change these to scale up)
-        this.width = 48;
-        this.height = 48;
+        this.width = 65;
+        this.height = 78;
         
-        this.speed = 6;
+        this.speed = 5;
         
         // Animation properties
         this.frameX = 0;

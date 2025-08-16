@@ -28,21 +28,8 @@ body {
     font-family: 'Orbitron', monospace;
     color: #2F1B14;
     overflow: hidden;
-}
-
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: 
-        radial-gradient(circle at 20% 20%, rgba(139, 69, 19, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(205, 133, 63, 0.2) 0%, transparent 50%),
-        radial-gradient(circle at 40% 60%, rgba(160, 82, 45, 0.1) 0%, transparent 50%);
-    pointer-events: none;
-    z-index: -1;
+    position: relative;
+    padding: 20px; /* Add some padding to body for small screens */
 }
 
 .game-container {
@@ -50,22 +37,26 @@ body::before {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 800px;
+    background: transparent;
 }
 
+/* Remove the separate UI and controls divs and integrate them into the container */
 #gameCanvas {
     border: 4px solid #5D2F0A;
-    border-radius: 8px;
+    border-radius: 0; /* Remove rounded corners to eliminate gaps */
     box-shadow: 
         0 0 20px rgba(139, 69, 19, 0.8),
         inset 0 0 10px rgba(0, 0, 0, 0.3);
     background: radial-gradient(circle at center, #DEB887 0%, #D2691E 100%);
+    width: 800px;
+    height: 600px;
+    display: block;
+    margin: 0;
 }
 
 .ui {
-    position: absolute;
-    top: -45px;
-    left: 0;
-    right: 0;
+    width: 800px; /* Match canvas width exactly */
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -74,13 +65,13 @@ body::before {
         rgba(160, 82, 45, 0.9) 50%, 
         rgba(139, 69, 19, 0.9) 100%);
     padding: 8px 16px;
-    border-radius: 8px 8px 0 0;
     border: 2px solid #5D2F0A;
     border-bottom: none;
     font-size: 14px;
     font-weight: bold;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     color: #F4E4BC;
+    margin: 0; /* Remove margin */
 }
 
 .ui > div {
@@ -101,23 +92,20 @@ body::before {
 }
 
 .controls {
-    position: absolute;
-    bottom: -35px;
-    left: 0;
-    right: 0;
+    width: 800px; /* Match canvas width exactly */
     text-align: center;
     background: linear-gradient(90deg, 
         rgba(139, 69, 19, 0.9) 0%, 
         rgba(160, 82, 45, 0.9) 50%, 
         rgba(139, 69, 19, 0.9) 100%);
     padding: 8px 16px;
-    border-radius: 0 0 8px 8px;
     border: 2px solid #5D2F0A;
     border-top: none;
     font-size: 12px;
     font-weight: bold;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
     color: #F4E4BC;
+    margin: 0; /* Remove margin */
 }
 
 .game-over {
@@ -231,16 +219,19 @@ body::before {
 
 /* Responsive design */
 @media (max-width: 850px) {
+    .ui, .controls, #gameCanvas {
+        width: 95vw;
+        max-width: 800px;
+    }
+    
     .ui {
         font-size: 12px;
         padding: 6px 12px;
-        top: -40px;
     }
     
     .controls {
         font-size: 10px;
         padding: 6px 12px;
-        bottom: -30px;
     }
     
     .game-over {
@@ -256,7 +247,6 @@ body::before {
 </head>
 <body>
     <div class="game-container">
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
         <div class="ui">
             <div>SCORE: <span id="score">0</span></div>
             <div>HEALTH: <span id="health">100</span></div>
@@ -265,6 +255,7 @@ body::before {
             <div>POWER: <span id="power">1</span></div>
             <div>FIRE RATE: <span id="fireRate">1</span></div>
         </div>
+        <canvas id="gameCanvas" width="800" height="600"></canvas>
         <div class="controls">
             ← → or A/D to move | AUTO-FIRE ACTIVE | COLLECT: + (AMMO) × (POWER) ÷ (RATE)
         </div>

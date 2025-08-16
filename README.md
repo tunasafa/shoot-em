@@ -30,18 +30,24 @@ v 1.5
 
 - game is now completely basic complete playable game, you can download and try
 
-next updates:
+next possible updates:
 
 - more sounds in the game
 - better visuals and graphics
 - more levels
 - mobile implementation
+- publishing
 
   v 1.5 look
 
 <img width="831" height="719" alt="Screenshot 2025-08-16 at 21 21 20" src="https://github.com/user-attachments/assets/d87d1dcf-27c6-4650-b6f0-d04b2f378541" />
 
+to run it locally and play it in your browser:
 
-
-
+1. download the game folder from here
+2. in the terminal where there is index file
+    run    --->>    python3 -m http.server 8000
+3. go to your browser
+    enter --->>>    http://localhost:8000/
+4. play and enjoy
 

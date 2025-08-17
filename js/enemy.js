@@ -14,8 +14,8 @@ const END_LINE = {
 export class Enemy {
     constructor(game, lane, type = 'normal') {
         this.game = game;
-        this.initialWidth = 20; // Even thinner width
-        this.initialHeight = 20; // Adjusted height
+        this.initialWidth = 20; 
+        this.initialHeight = 20; 
         
         // Generate random start and end points
         this.startX = Math.random() * (SPAWN_LINE.xMax - SPAWN_LINE.xMin) + SPAWN_LINE.xMin;
@@ -57,11 +57,11 @@ export class Enemy {
     update(deltaTime) {
         this.y += this.speed * (deltaTime / 16);
         this.animFrame++;
-        this.walkCycle += 0.1; // Adjusted for better animation
+        this.walkCycle += 0.1;
         
         if (this.hitFlash > 0) this.hitFlash--;
 
-        // Calculate progress along the path
+        
         const dy = this.y - SPAWN_LINE.y;
         const totalY = END_LINE.y - SPAWN_LINE.y;
         const t = Math.min(1, dy / totalY);
@@ -100,7 +100,6 @@ export class Enemy {
         
         if (this.health <= 0) {
             this.active = false;
-            // Handle scoring and powerups in game.js
         }
     }
 
@@ -108,7 +107,6 @@ export class Enemy {
     render(ctx) {
         const bobY = this.y + Math.sin(this.animFrame * 0.1 + this.bobOffset) * 2 * (this.height / this.initialHeight);
         
-        // Enemy shadow with better perspective
         ctx.globalAlpha = 0.3;
         ctx.fillStyle = '#000000';
         const shadowWidth = this.width * 0.8;
@@ -127,7 +125,6 @@ export class Enemy {
             ctx.fill();
         }
         
-        // Draw detailed pixel art skeleton
         this.drawDetailedSkeleton(ctx, bobY);
         
         // Health bar for damaged enemies
@@ -137,7 +134,7 @@ export class Enemy {
     }
 
     drawDetailedSkeleton(ctx, bobY) {
-        const s = Math.max(1, this.scale * 2); // Scale factor for pixel art
+        const s = Math.max(1, this.scale * 2); 
         const centerX = this.x + this.width/2;
         const baseY = bobY + Math.sin(this.walkCycle + this.bobOffset) * 0.5 * s;
         
@@ -155,7 +152,7 @@ export class Enemy {
         const armSwing = Math.sin(this.walkCycle + Math.PI/3) * 1.5 * s;
         const headBob = Math.sin(this.walkCycle * 2) * 0.5 * s;
         
-        // Draw back arm first (depth)
+        // Draw back arm first
         if (legSwing > 0) {
             this.drawArm(ctx, centerX - 4 * s, shoulderY, true, -armSwing, s);
         } else {
@@ -193,7 +190,6 @@ export class Enemy {
     drawSkull(ctx, centerX, y, s) {
         const colors = this.getColors();
         
-        // Perfect skull shape - more rounded and anatomically correct
         // Top of skull (cranium)
         this.drawPixel(ctx, centerX - 2*s, y, 4*s, 1*s, colors.bone);
         this.drawPixel(ctx, centerX - 3*s, y + 1*s, 6*s, 1*s, colors.bone);
@@ -411,7 +407,6 @@ export class Enemy {
     }
 }
 
-// Add roundRect method to CanvasRenderingContext2D if it doesn't exist
 if (!CanvasRenderingContext2D.prototype.roundRect) {
     CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
         if (typeof radius === 'undefined') {

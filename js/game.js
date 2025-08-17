@@ -34,9 +34,9 @@ export class Game {
         this.lastDifficultyIncrease = 0;
         this.paused = false;
 
-        this.powerUps = []; // Add this array for power-ups
+        this.powerUps = []; 
         this.lastPowerUpSpawn = 0;
-        this.powerUpSpawnInterval = 5000; // 5 seconds between power-ups (adjust as needed)
+        this.powerUpSpawnInterval = 5000;
         
         // Game objects
         this.player = null;
@@ -45,7 +45,7 @@ export class Game {
         this.particles = [];
         this.backgroundStars = [];
         
-        // Initialize background stars/sand particles
+        
         this.initBackgroundParticles();
         
         // Event listeners
@@ -64,7 +64,7 @@ export class Game {
         console.log('Restart button event listener attached.');
         console.log('Game class constructor finished');
 
-        this.gameState = 'PLAYING'; // Start in PLAYING state immediately
+        this.gameState = 'PLAYING'; 
     }
 
     spawnPowerUp() {
@@ -136,11 +136,11 @@ export class Game {
     }
 
     async init() {
-        this.initGradients(); // Initialize gradients here
+        this.initGradients(); 
         this.player = new Player(this);
         this.updateUI();
         this.gameRunning = true;
-        this.gameState = 'PLAYING'; // Ensure we're in PLAYING state
+        this.gameState = 'PLAYING'; 
     }
 
     start() {
@@ -410,10 +410,9 @@ export class Game {
         this.particles = [];
         this.backgroundStars = [];
         
-        this.powerUps = []; // Add this line
-        this.lastPowerUpSpawn = Date.now(); // Reset spawn timer
+        this.powerUps = []; 
+        this.lastPowerUpSpawn = Date.now(); 
 
-        // Reinitialize background particles
         this.initBackgroundParticles();
         
         document.getElementById('gameOver').style.display = 'none';
@@ -426,7 +425,7 @@ export class Game {
         typeChance = Math.min(typeChance, 0.2);
         const type = Math.random() < typeChance ? 'strong' : 'normal';
 
-        this.enemies.push(new Enemy(this, 0, type)); // lane parameter not used in new enemy class
+        this.enemies.push(new Enemy(this, 0, type)); 
     }
 
     autoShoot() {
@@ -445,7 +444,7 @@ export class Game {
         }
         const sound = this.audioCache.get(soundName);
         sound.volume = volume;
-        sound.currentTime = 0; // Reset to beginning
+        sound.currentTime = 0; 
         sound.play().catch(e => console.log("Audio play failed:", e));
     }
 
@@ -721,7 +720,7 @@ export class Game {
                         );
                         this.enemies.splice(j, 1);
                     }
-                    break; // Break inner loop but continue checking other bullets
+                    break;
                 }
             }
             

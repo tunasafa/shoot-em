@@ -20,10 +20,11 @@ v1 look
 
 v 1.5
 
-- enemies have very good trajectories
+- enemies have trajectories according to the perspective of the highway
 - player has a new sprite
 - enemies are now walking skeletons
-- sound is good
+- enemies are scaling from small to bigger according to the perspective
+- sound is working good
 - restart button working
 - pause and play feature introduced and working
 - powerups have new sprites

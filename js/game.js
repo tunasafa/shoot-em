@@ -36,7 +36,7 @@ export class Game {
 
         this.powerUps = []; 
         this.lastPowerUpSpawn = 0;
-        this.powerUpSpawnInterval = 5000;
+        this.powerUpSpawnInterval = 3500;
         
         // Game objects
         this.player = null;

@@ -1,5 +1,7 @@
 # shoot'em
 
+# ** > ⚡  to play the game click the link: https://tunasafa.github.io/shoot-em/ **
+
 v 1.1
 
 some shooting game to start

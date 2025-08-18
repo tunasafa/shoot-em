@@ -16,8 +16,8 @@ export class Game {
         this.score = 0;
         this.health = 100;
         this.maxHealth = 100;
-        this.ammo = 20;
-        this.maxAmmo = 30;
+        this.ammo = 40;
+        this.maxAmmo = 80;
         this.power = 1;
         this.fireRate = 1;
         this.wave = 1;
